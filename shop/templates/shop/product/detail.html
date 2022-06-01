@@ -1,0 +1,307 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}
+  {{ product.name }}
+{% endblock %}
+
+{% block content %}
+<!-- breadcrum -->
+<div class="py-4 container flex gap-3 items-center">
+  <a href="/" class="text-primary text-base">
+      <i class="fas fa-home"></i>
+  </a>
+  <span class="text-sm text-gray-400"><i class="fas fa-chevron-right"></i></span>
+  <a href="/" class="text-primary text-base font-medium uppercase">
+      Shop
+  </a>
+  <span class="text-sm text-gray-400"><i class="fas fa-chevron-right"></i></span>
+  <p class="text-gray-600 font-medium uppercase">{{ product.name }}</p>
+</div>
+<!-- breadcrum end -->
+
+<div class="text-center">
+    {% if messages %}
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" alert-{{ message.tags }}" role="alert">
+    {% for message in messages  %}
+      {{message|safe}} - <a href="{% url "shop:wishlist" %}" class="alert-link">Your Wishlist</a>.
+    {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- product view -->
+<div class="container pt-4 pb-6 grid lg:grid-cols-2 gap-6">
+  <!-- product image -->
+  <div>
+      <div>
+        <img id="main-img" src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/no_image.png' %}{% endif %}" class="w-full">
+      </div>
+      <div class="grid grid-cols-5 gap-4 mt-4">
+        {% for pi in product.productimage_set.all %}
+          <div>
+                <img src="{{pi.image.url}}" class="single-img w-full cursor-pointer border border-primary">
+          </div>
+        {% endfor %}
+      </div>
+  </div>
+  <!-- product image end -->
+  <!-- product content -->
+  <div>
+      <h2 class="md:text-3xl text-2xl font-medium uppercase mb-2">{{ product.name }}</h2>
+      <div class="flex items-center mb-4">
+          <div class="flex gap-1 text-sm">
+            <span><i class="fas fa-star {% if product.get_rating > 0 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}"></i></span>
+            <span><i class="fas fa-star {% if product.get_rating > 1 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}"></i></span>
+            <span><i class="fas fa-star {% if product.get_rating > 2 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}"></i></span>
+            <span><i class="fas fa-star {% if product.get_rating > 3 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}"></i></span>
+            <span><i class="fas fa-star {% if product.get_rating > 4 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}"></i></span>
+          </div>
+          <div class="text-xs text-gray-500 ml-3">({{ product.review_count }} Reviews)</div>
+      </div>
+      <div class="space-y-2">
+          <p class="text-gray-800 font-semibold space-x-2">
+              <span>Availability: </span>
+              <span class="text-green-600">In Stock</span>
+          </p>
+          <p class="space-x-2">
+              <span class="text-gray-800 font-semibold">Brand: </span>
+              <span class="text-gray-600"></span>
+          </p>
+          <p class="space-x-2">
+              <span class="text-gray-800 font-semibold">Category: </span>
+              <a href="{{ product.category.get_absolute_url }}"><span class="text-gray-600">{{ product.category }}</span></a>
+          </p>
+      </div>
+      <div class="mt-4 flex items-baseline gap-3">
+          <span class="text-primary font-semibold text-xl">€{{ product.price }}</span>
+          <span class="text-gray-500 text-base line-through">€{{ product.price }}</span>
+      </div>
+      <p class="mt-4 text-gray-600">
+          {{ product.description }}
+      </p>
+      
+      <!-- color -->
+      <div class="mt-4">
+          <h3 class="text-base text-gray-800 mb-1">Color</h3>
+          <div class="flex items-center gap-2">
+              <!-- single color -->
+              <div class="color-selector">
+                  <input type="radio" name="color" class="hidden" id="color-red" checked>
+                  <label for="color-red" style="background-color : #fc3d57"
+                      class="text-xs border border-gray-200 rounded-sm h-5 w-5 flex items-center justify-center cursor-pointer shadow-sm">
+                  </label>
+              </div>
+              <!-- single color end -->
+              <!-- single color -->
+              <div class="color-selector">
+                  <input type="radio" name="color" class="hidden" id="color-white">
+                  <label for="color-white" style="background-color : #fff"
+                      class="text-xs border border-gray-200 rounded-sm h-5 w-5 flex items-center justify-center cursor-pointer shadow-sm">
+                  </label>
+              </div>
+              <!-- single color end -->
+              <!-- single color -->
+              <div class="color-selector">
+                  <input type="radio" name="color" class="hidden" id="color-black">
+                  <label for="color-black" style="background-color : #000"
+                      class="text-xs border border-gray-200 rounded-sm h-5 w-5 flex items-center justify-center cursor-pointer shadow-sm">
+                  </label>
+              </div>
+              <!-- single color end -->
+          </div>
+      </div>
+      <!-- color end -->
+      <!-- add to cart button -->
+      <div class="flex gap-3 border-b border-gray-200 pb-5 mt-6">
+        <form action="{% url "cart:cart_add" product.id %}" method="post" class="bg-primary border border-primary text-white px-8 py-2 font-medium rounded uppercase 
+              hover:bg-transparent hover:text-primary transition text-sm flex items-center">
+              {{ cart_product_form }}
+              {% csrf_token %}
+              <input type="submit" value="Add to cart">
+      </form>
+          <a href="{% url "shop:user_wishlist" product.id  %}" class="border border-gray-300 text-gray-600 px-8 py-2 font-medium rounded uppercase 
+              hover:bg-transparent hover:text-primary transition text-sm">
+              <span class="mr-2"><i class="far fa-heart"></i></span> Wishlist
+          </a>
+      </div>
+      <!-- add to cart button end -->
+      <!-- product share icons -->
+      <div class="flex space-x-3 mt-4">
+          <a href="#"
+              class="text-gray-400 hover:text-gray-500 h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center">
+              <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="#"
+              class="text-gray-400 hover:text-gray-500 h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center">
+              <i class="fab fa-twitter"></i>
+          </a>
+          <a href="#"
+              class="text-gray-400 hover:text-gray-500 h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center">
+              <i class="fab fa-instagram"></i>
+          </a>
+      </div>
+      <!-- product share icons end -->
+  </div>
+  <!-- product content end -->
+</div>
+<!-- product view end -->
+
+<!-- product details and review -->
+<div class="container pb-16">
+  <!-- detail buttons -->
+  <h3 class="border-b border-gray-200 font-roboto text-gray-800 pb-3 font-medium">
+      Product Details
+  </h3>
+  <!-- details button end -->
+
+  <!-- details content -->
+  <div class="lg:w-4/5 xl:w-3/5 pt-6">
+      <div class="space-y-3 text-gray-600">
+          <p>
+              Incredible graphics performanceMacBook Air can take on more graphics-intensive projects than
+              ever. For the first time, content creators can edit and seamlessly play back multiple streams of
+              full‑quality 4K video without dropping a frame.
+          </p>
+          <p>
+              Incredible graphics performanceMacBook Air can take on more graphics-intensive projects than
+              ever. For the first time, content creators can edit and seamlessly play back multiple streams of
+              full‑quality 4K video without dropping a frame.
+          </p>
+          <p>
+              Apps on MacBook Air can use machine learning (ML) to automatically retouch photos like a pro,
+              make smart tools such as magic wands and audio filters more accurate at auto‑detection, and so
+              much more. That’s not just brain power — that’s the power of a full stack of ML technologies.
+          </p>
+      </div>
+  </div>
+  <!-- details content end -->
+</div>
+<!-- product details and review end -->
+
+<!-- related products -->
+<div class="container pb-16">
+  <h2 class="text-2xl md:text-3xl font-medium text-gray-800 uppercase mb-6">related products</h2>
+  <!-- product wrapper -->
+  <div class="grid lg:grid-cols-4 sm:grid-cols-2 gap-6">
+    {% for product in related %}
+      <!-- single product -->
+      <div class="group rounded bg-white shadow overflow-hidden">
+          <!-- product image -->
+          <div class="relative">
+              <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/no_image.png' %}{% endif %}" class="w-full">
+              <div
+                  class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition">
+                  <a href="view.html"
+                      class="text-white text-lg w-9 h-9 rounded-full bg-primary hover:bg-gray-800 transition flex items-center justify-center">
+                      <i class="fas fa-search"></i>
+                  </a>
+                  <a href="{% url "shop:wishlist" %}"
+                      class="text-white text-lg w-9 h-9 rounded-full bg-primary hover:bg-gray-800 transition flex items-center justify-center">
+                      <i class="far fa-heart"></i>
+                  </a>
+              </div>
+          </div>
+          <!-- product image end -->
+          <!-- product content -->
+          <div class="pt-4 pb-3 px-4">
+              <a href="{{ product.get_absolute_url }}">
+                  <h4 class="uppercase font-medium text-xl mb-2 text-gray-800 hover:text-primary transition">
+                    {{product.name}}
+                  </h4>
+              </a>
+              <div class="flex items-baseline mb-1 space-x-2">
+                  <p class="text-xl text-primary font-roboto font-semibold">€{{ product.price }}</p>
+                  <p class="text-sm text-gray-400 font-roboto line-through">€{{ product.price }}</p>
+              </div>
+              <div class="flex items-center">
+                  <div class="flex gap-1 text-sm text-yellow-400">
+                    <span><i class="fas fa-star {% if product.get_rating > 0 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}"></i></span>
+                    <span><i class="fas fa-star {% if product.get_rating > 1 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}"></i></span>
+                    <span><i class="fas fa-star {% if product.get_rating > 2 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}"></i></span>
+                    <span><i class="fas fa-star {% if product.get_rating > 3 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}"></i></span>
+                    <span><i class="fas fa-star {% if product.get_rating > 4 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}"></i></span>
+                  </div>
+                  <div class="text-xs text-gray-500 ml-3">({{ product.review_count }})</div>
+              </div>
+          </div>
+          <!-- product content end -->
+      </div>
+      <!-- single product end -->
+    {% endfor %}
+  </div>
+  <!-- product wrapper end -->
+</div>
+<!-- related products end -->
+
+<!-- product review -->
+<div class="container pb-16">
+    <h3 class="border-b border-gray-200 font-roboto text-gray-800 pb-3 font-medium">
+        Reviews ({{ product.reviews.all|length }})
+    </h3>
+    <div class="container pt-4 pb-6 grid lg:grid-cols-2 gap-6">
+        <!-- product image -->
+        <div>
+            <div class="row p-3">
+                <div class="mt-2">
+                {% for review in product.reviews.all %}
+                <div class="pt-2">
+                    <a class="text-sm font-medium leading-none text-gray-800">{{review.user.username}}</a>
+                    <a class="text-sm font-medium leading-none text-gray-800 pl-3">{{review.created_at}}</a>
+                    <div class="flex items-center mt-1">
+                    <svg class="w-5 h-5 {% if review.rate > 0 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                    <svg class="w-5 h-5 {% if review.rate > 1 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                    <svg class="w-5 h-5 {% if review.rate > 2 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                    <svg class="w-5 h-5 {% if review.rate > 3 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                    <svg class="w-5 h-5 {% if review.rate > 4 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                    </div>
+                </div>
+                <div class="text-sm font-medium leading-none text-gray-800 mt-2">
+                    <p>{{review.comment}}</p>
+                </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- product image end -->
+        <!-- product content -->
+        <div>
+            <div class="md:flex">
+                <div class="px-4 py-6 ">
+                <form method="post" action=".">
+                    {% csrf_token %}
+                    <div class="mb-1">
+                    <span class="text-md font-medium leading-none text-gray-800">Comment</span>
+                    <textarea name="comment" type="text" class="h-24 py-1 px-3 w-full border-2 border-blue-400 rounded focus:outline-none focus:border-blue-600 resize-none"></textarea>
+                    </div>
+                    <div class="flex items-center">
+                    <label class="text-md font-medium leading-none text-gray-800 pr-2">Your Rating:</label>
+                    <select name="rate" id="">
+                        <option value="1" selected>0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                    </div>
+        
+                    <div class="mt-3 text-right">
+        
+                    {% if user.is_authenticated %}
+                    <button class="ml-2 h-8 w-20 bg-blue-600 rounded text-white text-sm hover:bg-blue-700" type="submit">Submit</button>
+                    {% else %}
+                    <p class="focus:outline-none text-sm mt-4 font-medium leading-none text-gray-500">You must be loggied in to post a review <a href="{% url 'shop:login' %}"   class="hover:text-gray-500 focus:text-gray-500 focus:outline-none focus:underline hover:underline text-sm font-medium leading-none  text-gray-800 cursor-pointer"> Login here</a></p></p>
+                    {% endif %}
+                    
+                    </div>
+                </form>   
+                </div>
+            </div>
+        </div>
+        <!-- product content end -->
+    </div>
+</div>
+<!-- product review end -->
+<script type="text/javascript" src="{% static 'js/script.js' %}" ></script>
+{% endblock %}

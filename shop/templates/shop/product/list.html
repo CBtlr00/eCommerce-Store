@@ -1,0 +1,135 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}
+  {% if category %}{{ category.name }}{% else %}Products{% endif %}
+{% endblock %}
+
+{% block content %}
+    <!-- banner -->
+    <div class="bg-cover bg-no-repeat bg-center py-36 relative" style="background-image: url('images/banner-bg.jpg')">
+      <div class="container">
+          <!-- banner content -->
+          <h1 class="xl:text-6xl md:text-5xl text-4xl text-gray-800 font-medium mb-4">
+              Best Collection For <br class="hidden sm:block"> Technology
+          </h1>
+          <p class="text-base text-gray-600 leading-6">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa <br class="hidden sm:block">
+              assumenda aliquid inventore nihil laboriosam odio
+          </p>
+          <!-- banner button -->
+          <div class="mt-12">
+              <a href="/" class="bg-primary border border-primary text-white px-8 py-3 font-medium rounded-md uppercase hover:bg-transparent
+             hover:text-primary transition">
+                  Shop now
+              </a>
+          </div>
+          <!-- banner button end -->
+          <!-- banner content end -->
+      </div>
+    </div>
+    <!-- banner end -->
+
+  <!-- features -->
+  <div class="container py-16">
+    <div class="lg:w-10/12 grid md:grid-cols-3 gap-3 lg:gap-6 mx-auto justify-center">
+
+        <!-- single feature -->
+        <div
+            class="border-primary border rounded-sm px-8 lg:px-3 lg:py-6 py-4 flex justify-center items-center gap-5">
+            <img src="{% static "img/delivery-van.svg" %}" class="lg:w-12 w-10 h-12 object-contain">
+            <div>
+                <h4 class="font-medium capitalize text-lg">free shipping</h4>
+                <p class="text-gray-500 text-xs lg:text-sm">Order over €200</p>
+            </div>
+        </div>
+        <!-- single feature end -->
+        <!-- single feature -->
+        <div
+            class="border-primary border rounded-sm px-8 lg:px-3 lg:py-6 py-4 flex justify-center items-center gap-5">
+            <img src="{% static "img/money-back.svg" %}" class="lg:w-12 w-10 h-12 object-contain">
+            <div>
+                <h4 class="font-medium capitalize text-lg">Money returns</h4>
+                <p class="text-gray-500 text-xs lg:text-sm">30 Days money return</p>
+            </div>
+        </div>
+        <!-- single feature end -->
+        <!-- single feature -->
+        <div
+            class="border-primary border rounded-sm px-8 lg:px-3 lg:py-6 py-4 flex justify-center items-center gap-5">
+            <img src="{% static "img/service-hours.svg" %}" class="lg:w-12 w-10 h-12 object-contain">
+            <div>
+                <h4 class="font-medium capitalize text-lg">24/7 Support</h4>
+                <p class="text-gray-500 text-xs lg:text-sm">Customer support</p>
+            </div>
+        </div>
+        <!-- single feature end -->
+
+    </div>
+</div>
+<!-- features end -->
+
+<!-- products -->
+<div class="container pb-16">
+    <h2 class="text-2xl md:text-3xl font-medium text-gray-800 uppercase mb-6">{% if category %}{{ category.name }}{% else %}Products{% endif %}</h2>
+    <div class="text-center">
+        {% if messages %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" alert-{{ message.tags }}" role="alert">
+        {% for message in messages  %}
+          {{message|safe}} - <a href="{% url "shop:wishlist" %}" class="alert-link">Your Wishlist</a>.
+        {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    <!-- product wrapper -->
+    <div class="grid lg:grid-cols-4 sm:grid-cols-2 gap-6">
+      {% for product in products %}
+        <!-- single product -->
+        <div class="group rounded bg-white shadow overflow-hidden">
+            <!-- product image -->
+            <div class="relative">
+                <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/no_image.png' %}{% endif %}" class="w-full">
+                <div
+                    class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition">
+                    <a href="{{ product.get_absolute_url }}"
+                        class="text-white text-lg w-9 h-9 rounded-full bg-primary hover:bg-gray-800 transition flex items-center justify-center">
+                        <i class="fas fa-search"></i>
+                    </a>
+                    <a href="{% url "shop:user_wishlist" product.id %}"
+                        class="text-white text-lg w-9 h-9 rounded-full bg-primary hover:bg-gray-800 transition flex items-center justify-center">
+                        <i class="far fa-heart"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- product image end -->
+            <!-- product content -->
+            <div class="pt-4 pb-3 px-4">
+                <a href="{{ product.get_absolute_url }}">
+                    <h4 class="uppercase font-medium text-xl mb-2 text-gray-800 hover:text-primary transition">
+                      {{ product.name }}
+                    </h4>
+                </a>
+                <div class="flex items-baseline mb-1 space-x-2">
+                    <p class="text-xl text-primary font-roboto font-semibold">€{{ product.price }}</p>
+                    <p class="text-sm text-gray-400 font-roboto line-through">€{{ product.price }}</p>
+                </div>
+                <div class="flex items-center">
+                    <div class="flex gap-1 text-sm">
+                        <span><i class="fas fa-star {% if product.get_rating > 0 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}"></i></span>
+                        <span><i class="fas fa-star {% if product.get_rating > 1 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}"></i></span>
+                        <span><i class="fas fa-star {% if product.get_rating > 2 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}"></i></span>
+                        <span><i class="fas fa-star {% if product.get_rating > 3 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}"></i></span>
+                        <span><i class="fas fa-star {% if product.get_rating > 4 %} text-yellow-400 {% else %} text-gray-300 dark:text-gray-500 {% endif %}"></i></span>
+                    </div>
+                    <div class="text-xs text-gray-500 ml-3">({{ product.review_count }})</div>
+                </div>
+            </div>
+            <!-- product content end -->
+        </div>
+        <!-- single product end -->
+      {% endfor %}
+    </div>
+    <!-- product wrapper end -->
+  </div>
+  <!-- products end -->
+{% endblock %}

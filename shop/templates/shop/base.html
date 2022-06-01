@@ -1,0 +1,40 @@
+<!doctype html>
+{% load static %}
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		    <title>{% block title %}My shop{% endblock %}</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://unpkg.com/flowbite@1.4.3/dist/flowbite.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+        integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+        crossorigin="anonymous" />
+        <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    </head>
+    <body>
+      {% include 'shop/navbar.html' %}
+
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        {% include 'shop/footer.html' %}
+
+        <script>
+            let menuBar = document.querySelector('#menuBar')
+            let mobileMenu = document.querySelector('#mobileMenu')
+            let closeMenu = document.querySelector('#closeMenu')
+    
+            menuBar.addEventListener('click', function(){
+                mobileMenu.classList.remove('hidden')
+            })
+    
+            closeMenu.addEventListener('click', function(){
+                mobileMenu.classList.add('hidden')
+            })
+        </script>
+    </body>
+</html>
